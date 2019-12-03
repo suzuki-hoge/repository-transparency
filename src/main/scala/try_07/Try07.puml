@@ -1,0 +1,33 @@
+@startuml
+
+title Try07
+
+class DomainService << (S, lightcyan) >> {
+  def apply(...): Option[Error]
+}
+
+class Order {
+  OrderStatus
+  OrderKind
+
+  def assertOrdered(): Boolean
+  def assertClothes(): Boolean
+}
+
+class Item {
+  ItemStatus
+
+  def assertWaiting(): Boolean
+}
+
+enum Error {
+  OrderedOnly
+  ClothesOnly
+  WaitingOnly
+}
+
+DomainService -> Error
+DomainService --> Order
+DomainService --> Item
+
+@enduml

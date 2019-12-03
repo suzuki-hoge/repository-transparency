@@ -1,0 +1,94 @@
+@startuml
+
+title Try13
+
+class ApplicationService {
+  OrderRepository
+  ItemRepository
+  UserRepository
+
+  def apply(Int): Response[Unit]
+}
+
+interface Response<R>
+
+class Success<R> {
+  R
+}
+
+class Failure<R> {
+  Error
+}
+
+Success -u-|> Response
+Failure -u-|> Response
+
+class FlowDomainService << (S, lightcyan) >> {
+  def apply(Order, Lazy[Item]): Either[Error, Unit]
+}
+
+class UserDomainService << (S, lightcyan) >> {
+  def apply(User): Either[Error, Unit]
+}
+
+package order {
+  class Order {
+    OrderStatus
+    OrderKind
+
+    def validate(): Either[OrderError, Unit]
+  }
+
+  enum OrderError {
+    OrderedOnly
+    ClothesOnly
+  }
+
+  Order -d-> OrderError
+}
+
+package item {
+  class Item {
+    ItemStatus
+
+    def validate(): Either[ItemError, Unit]
+  }
+
+  enum ItemError {
+    WaitingOnly
+  }
+
+  Item -d-> ItemError
+}
+
+package user {
+  class User {
+    Plan
+
+    def validatePremium(): Either[UserError, Unit]
+  }
+
+  enum UserError {
+    PremiumOnly
+  }
+
+  User -d-> UserError
+}
+
+interface Error
+
+FlowDomainService -d-> Order
+FlowDomainService -d-> Item
+
+UserDomainService -d-> User
+
+OrderError -d-|> Error
+ItemError -d-|> Error
+UserError -d-|> Error
+
+ApplicationService -d-> FlowDomainService
+ApplicationService -d-> UserDomainService
+
+ApplicationService -l-> Response
+
+@enduml

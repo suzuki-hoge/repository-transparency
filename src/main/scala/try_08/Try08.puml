@@ -1,0 +1,42 @@
+@startuml
+
+title Try08
+
+class DomainService << (S, lightcyan) >> {
+  def apply(...): Option[Error]
+}
+
+class Order {
+  OrderStatus
+  OrderKind
+
+  def validate(): Option[OrderError]
+}
+
+class Item {
+  ItemStatus
+
+  def validate(): Option[ItemError]
+}
+
+interface Error
+
+enum OrderError {
+  OrderedOnly
+  ClothesOnly
+}
+
+enum ItemError {
+  WaitingOnly
+}
+
+DomainService --> Order
+DomainService --> Item
+
+Order --> OrderError
+Item --> ItemError
+
+OrderError -r-|> Error
+ItemError -l-|> Error
+
+@enduml

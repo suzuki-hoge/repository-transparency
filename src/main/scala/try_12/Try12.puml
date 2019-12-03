@@ -1,0 +1,86 @@
+@startuml
+
+title Try12
+
+namespace cancel {
+  class DomainService << (S, lightcyan) >> {
+    def apply(...): Option[Error]
+  }
+}
+
+namespace change_deliver_to {
+  class DomainService << (S, lightcyan) >> {
+    def apply(...): Option[Error]
+  }
+}
+
+namespace change_arrival_at {
+  class DomainService << (S, lightcyan) >> {
+    def apply(...): Option[Error]
+  }
+}
+
+package order {
+  class Order {
+    OrderStatus
+    OrderKind
+
+    def validateOrdered(): Option[OrderError]
+    def validateClothes(): Option[OrderError]
+  }
+
+  enum OrderError {
+    OrderedOnly
+    ClothesOnly
+  }
+
+  Order -d-> OrderError
+}
+
+package item {
+  class Item {
+    ItemStatus
+
+    def validateWaiting(): Option[ItemError]
+    def validateWaitingOrPacked(): Option[ItemError]
+  }
+
+  enum ItemError {
+    WaitingOnly
+    WaitingOrPackedOnly
+  }
+
+  Item -d-> ItemError
+}
+
+package user {
+  class User {
+    Plan
+
+    def validatePremium(): Option[UserError]
+  }
+
+  enum UserError {
+    PremiumOnly
+  }
+
+  User -d-> UserError
+}
+
+interface Error
+
+cancel.DomainService -d--> Order
+cancel.DomainService -d--> Item
+
+change_deliver_to.DomainService -d--> Order
+change_deliver_to.DomainService -d--> Item
+
+change_arrival_at.DomainService -d--> Order
+change_arrival_at.DomainService -d--> Item
+change_arrival_at.DomainService -d--> User
+
+OrderError -d-|> Error
+ItemError -d-|> Error
+UserError -d-|> Error
+
+@enduml

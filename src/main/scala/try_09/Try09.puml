@@ -1,0 +1,103 @@
+@startuml
+
+title Try09
+
+namespace cancel {
+  class DomainService << (S, lightcyan) >> {
+    def apply(...): Option[Error]
+  }
+
+  class Order {
+    OrderStatus
+    OrderKind
+
+    def assertOrdered(): Boolean
+    def assertClothes(): Boolean
+  }
+
+  class Item {
+    ItemStatus
+
+    def assertWaiting(): Boolean
+  }
+
+  enum Error {
+    OrderedOnly
+    ClothesOnly
+    WaitingOnly
+  }
+
+  DomainService -> Error
+  DomainService --> Order
+  DomainService --> Item
+}
+
+namespace change_deliver_to {
+  class DomainService << (S, lightcyan) >> {
+    def apply(...): Option[Error]
+  }
+
+  class Order {
+    OrderStatus
+
+    def assertOrdered(): Boolean
+  }
+
+  class Item {
+    ItemStatus
+
+    def assertWaiting(): Boolean
+  }
+
+  enum Error {
+    OrderedOnly
+    WaitingOnly
+  }
+
+  DomainService -> Error
+  DomainService --> Order
+  DomainService --> Item
+}
+
+namespace change_arrival_at {
+  class DomainService << (S, lightcyan) >> {
+    def apply(...): Option[Error]
+  }
+
+  class Order {
+    OrderStatus
+    OrderKind
+
+    def assertOrdered(): Boolean
+    def assertClothes(): Boolean
+  }
+
+  class Item {
+    ItemStatus
+
+    def assertWaitingOrPacked(): Boolean
+  }
+
+  class User {
+    Plan
+
+    def assertPremium(): Boolean
+  }
+
+  enum Error {
+    OrderedOnly
+    ClothesOnly
+    WaitingOrPackedOnly
+    PremiumOnly
+  }
+
+  DomainService -r-> Error
+  DomainService --> Order
+  DomainService --> Item
+  DomainService --> User
+}
+
+cancel.Order -[hidden]d--> change_arrival_at.Order
+
+
+@enduml
